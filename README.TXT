@@ -1,26 +1,23 @@
-Blitz3D open source release!
 
-Workspace and project files are in MSVC 6.0 format.
+Blitz3D open source release.
 
-Ide and Debugger require MFC which is included with MSVC 6.0, but not with later free/express versions of MSVC.
+To build Blitz3D you will need:
 
-You can grab the prebuilt free version of blitz3d from www.blitzbasic.com.
+* Visual Studio Community 2017. Install "Desktop development with C++" plus "MFC and ATL support" plus "ASP.NET and web development".
+
+Too lazy to build? Grab the prebuilt version from https://blitzresearch.itch.io/
 
 Steps to build:
 
-1) Install freeimage241 into same dir as blitz3d: http://monkeycoder.co.nz/downloads/freeimage241.zip
+1) Open blitz3d.dsw in virtual studio 2017.
 
-2) Install fmodapi375win into same dir as blitz3d: http://www.fmod.org/files/public/fmodapi375win.zip
+2) Select release config and rebuild the entire solution.
 
-3) Open blitz3d workspace in MSVC 6.0.
+3) All done! You can find output files in the _release and _release/bin dirs. Feel free to delete .pdb and .ilk files here.
 
-4) Build project 'bblaunch' using config 'Win32 Blitz3D Release'.
+4) Note: This version of blitzplus uses the dynamic version of the fmod audio lib. When redistributing programs built with blitzplus_msvc2017, you will need to also include the fmod.dll file found in the _runtime/bin directory with your programs. This should be placed in the same directory as your program's executable.
 
-5) Output files should end up in _release subdir.
-
-6) Also copy fmodapi375win/api/fmod.dll to _release/bin.
-
-7) Done?
+5) You can also try building the debug version, although this hasn't been well tested.
 
 Blitz3d is released under the zlib/libpng license.
 
