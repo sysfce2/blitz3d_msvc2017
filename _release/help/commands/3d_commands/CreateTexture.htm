@@ -22,7 +22,7 @@ flags (optional) - texture flag:<br />
 64: Spherical environment map<br />
 128: Cubic environment map<br />
 256: Store texture in vram<br />
-512: Force the use of high color textures<br />
+512: Force the use of high color textures<br />1024: Use point sampling instead of linear sampling<br />
 <br />
 frames (optional) - no of frames texture will have. Defaults to 1.
 </td>
@@ -65,6 +65,11 @@ Please note that not some older graphics cards do not support cubic mapping. In 
 256: Store texture in vram. In some circumstances, this makes for much faster dynamic textures - ie. when using CopyRect between two textures. When drawing to cube maps in real-time, it is preferable to use this flag.<br />
 <br />
 512: Force the use of high color textures in low bit depth graphics modes. This is useful for when you are in 16-bit color mode, and wish to create/load textures with the alpha flag - it should give better results. <br />
+
+<br />
+1024: Use point texture sampling instead of linear texture sampling. Linear texture sampling is used to blend the adjacent pixels to create a smoothed looking texture. Using point sampling doesn't blend between adjacent pixels - this creates a blocky looking texture.
+
+<br />
 <br />
 Once you have created a texture, use SetBuffer TextureBuffer to draw to it. However, to display 2D graphics on a texture, it is usually quicker to draw to an image and then copy it to the texturebuffer, and to display 3D graphics on a texture, your only option is to copy from the backbuffer to the texturebuffer.
 <br>
