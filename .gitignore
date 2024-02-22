@@ -5,4 +5,5 @@ blitzide.prefs
 *.dll
 *.pdb
 *.ilk
+*.vcxproj.user
 .vs
