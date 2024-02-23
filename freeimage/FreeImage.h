@@ -8,7 +8,7 @@
 // - Adam Gates (adam.gates@str.com.au)
 // - Alex Kwak
 // - Alexander Dymerets (sashad@te.net.ua)
-// - Hervé Drolon (drolon@iut.univ-lehavre.fr)
+// - Hervï¿½ Drolon (drolon@iut.univ-lehavre.fr)
 // - Jan L. Nauta (jln@magentammt.com)
 // - Jani Kajala (janik@remedy.fi)
 // - Luca Piergentili (l.pierge@terra.es)
@@ -400,6 +400,7 @@ FI_STRUCT (Plugin) {
 
 #ifdef __cplusplus
 extern "C" {
+#undef FI_DEFAULT
 #define FI_DEFAULT(x) = x
 #endif
 

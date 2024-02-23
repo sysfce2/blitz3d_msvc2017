@@ -5,11 +5,11 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 project("Blitz3D")
 
 if(NOT (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"))
-    message(FATAL_ERROR "Blitz3D must be built using MSVC")
+    message(FATAL_ERROR "Blitz3D must be built using MSVC.")
 endif()
 
 if(NOT (CMAKE_SIZEOF_VOID_P EQUAL 4))
-    message(FATAL_ERROR "Blitz3D must be built in 32 mode")
+    message(FATAL_ERROR "Blitz3D must be built in 32 bit mode: Pass '-DCMAKE_GENERATOR_PLATFORM=Win32' to cmake when configuring.")
 endif()
 
 message(STATUS "Configuring Blitz3D for build type ${CMAKE_BUILD_TYPE}")
