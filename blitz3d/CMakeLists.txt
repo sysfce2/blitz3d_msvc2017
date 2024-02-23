@@ -77,4 +77,6 @@ add_library(blitz3d
 		world.h
 )
 
+target_compile_options(blitz3d PRIVATE /Gz)
+
 target_link_libraries(blitz3d gxruntime ${CMAKE_CURRENT_SOURCE_DIR}/minidx9/lib/d3dxof.lib)

@@ -35,4 +35,6 @@ add_library(bbruntime
         userlibs.h
         )
 
+target_compile_options(bbruntime PRIVATE /Gz)
+
 target_link_libraries(bbruntime blitz3d)

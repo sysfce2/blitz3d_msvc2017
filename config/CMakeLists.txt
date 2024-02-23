@@ -6,3 +6,5 @@ add_library(config
         config.cpp
         config.h
 )
+
+target_compile_options(config PRIVATE /Gz)

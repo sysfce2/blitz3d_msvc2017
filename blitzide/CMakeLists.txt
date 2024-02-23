@@ -26,4 +26,6 @@ add_executable(blitzide WIN32
         tabber.h
 )
 
+target_compile_options(blitzide PRIVATE /Gz)
+
 copy_exe_to_release(blitzide bin/ide)

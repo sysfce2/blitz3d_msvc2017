@@ -11,4 +11,6 @@ add_library(linker
         std.h
 )
 
+target_compile_options(linker PRIVATE /Gz)
+
 target_link_libraries(linker stdutil)

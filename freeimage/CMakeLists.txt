@@ -121,6 +121,7 @@ add_library(freeimage
         ZLib/uncompr.c
         ZLib/zutil.c
 )
+target_compile_options(freeimage PRIVATE /Gd)
 
 target_compile_definitions(freeimage PRIVATE FREEIMAGE_LIB=1 _LIB=1)
 

@@ -12,6 +12,8 @@ add_executable(bblaunch WIN32
         checkie.h
         )
 
+target_compile_options(bblaunch PRIVATE /Gz)
+
 copy_exe_to_release(bblaunch Blitz3D)
 
 
