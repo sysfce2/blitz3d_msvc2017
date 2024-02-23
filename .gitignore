@@ -1,9 +1,34 @@
+# MSVC Build directories
 Debug
 Release
+out
+
+# MSVC project prefs
+*.vcxproj.user
+
+# Blitz3D preferences
 blitzide.prefs
+ 
+# Blitz3d backup files
+*.bb_bak1
+*.bb_bak2
+
+# CMake build files
+cmake-build-*
+
+# CLion project file
+.idea
+
+# Visual Studio project file
+.vs
+
+# Binary files
 *.exe
 *.dll
+
+# MSVC crud files
 *.pdb
 *.ilk
-*.vcxproj.user
-.vs
+
+
+
