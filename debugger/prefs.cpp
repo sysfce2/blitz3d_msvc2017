@@ -130,7 +130,6 @@ void Prefs::setDefault(){
 	font_debug="verdana";
 	font_debug_height=8;
 
-#ifdef PRO
 	rgb_bkgrnd=RGB( 0x22,0x55,0x88 );
 	rgb_string=RGB( 0x00,0xff,0x66 );
 	rgb_ident=RGB( 0xff,0xff,0xff );
@@ -139,7 +138,8 @@ void Prefs::setDefault(){
 	rgb_digit=RGB( 0x33,0xff,0xdd );
 	rgb_default=RGB( 0xee,0xee,0xee );
 	rgb_unsel=RGB( 0x88,0x88,0x88 );
-#else
+
+#if 0 // Old Bltz2D colors!
 	rgb_bkgrnd=RGB( 32,96,96 );
 	rgb_string=RGB( 0,255,0 );
 	rgb_ident=RGB( 255,255,255 );

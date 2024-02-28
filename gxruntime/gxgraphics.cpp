@@ -39,9 +39,7 @@ runtime(rt),dirDraw(dd),dir3d(0),dir3dDev(0),def_font(0),gfx_lost(false),dummy_m
 
 gxGraphics::~gxGraphics(){
 	if( _gamma ) _gamma->Release();
-#ifdef PRO
 	while( scene_set.size() ) freeScene( *scene_set.begin() );
-#endif
 	while( movie_set.size() ) closeMovie( *movie_set.begin() );
 	while( font_set.size() ) freeFont( *font_set.begin() );
 	while( canvas_set.size() ) freeCanvas( *canvas_set.begin() );
@@ -98,14 +96,12 @@ bool gxGraphics::restore(){
 		(*it)->restore();
 	}
 
-#ifdef PRO
 	//restore all meshes (b3d surfaces)
 	set<gxMesh*>::iterator mesh_it;
 	for( mesh_it=mesh_set.begin();mesh_it!=mesh_set.end();++mesh_it ){
 		(*mesh_it)->restore();
 	}
 	if( dir3d ) dir3d->EvictManagedTextures();
-#endif
 
 	return true;
 }
@@ -370,8 +366,6 @@ void gxGraphics::freeFont( gxFont *f ){
 // 3D STUFF //
 //////////////
 
-#ifdef PRO
-
 static int maxDevType;
 
 static HRESULT CALLBACK enumDevice( char *desc,char *name,D3DDEVICEDESC7 *devDesc,void *context ){
@@ -615,5 +609,3 @@ gxMesh *gxGraphics::verifyMesh( gxMesh *m ){
 void gxGraphics::freeMesh( gxMesh *mesh ){
 	if( mesh_set.erase( mesh ) ) delete mesh;
 }
-
-#endif
