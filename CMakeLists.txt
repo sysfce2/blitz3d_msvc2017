@@ -14,8 +14,8 @@ endif ()
 
 message(STATUS "Configuring Blitz3D for build type ${CMAKE_BUILD_TYPE}")
 
-set(BB_BLITZ3D_ENABLED 1)
-set(BB_LIBSGD_ENABLED 0)
+set(BB_BLITZ3D_ENABLED 0)
+set(BB_LIBSGD_ENABLED 1)
 
 if(BB_BLITZ3D_ENABLED)
 	add_compile_definitions(BB_BLITZ3D_ENABLED=1)
