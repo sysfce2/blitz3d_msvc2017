@@ -53,7 +53,7 @@ add_library(gxruntime ${SRCS})
 
 target_compile_options(gxruntime PRIVATE /Gz)
 
-set(LIBS stdutil fmod375 winmm dsound dinput8 dxguid wsock32)
+set(LIBS stdutil fmod375 winmm dsound dinput8 dxguid Ws2_32.lib)
 
 if (BB_BLITZ3D_ENABLED)
 	set(LIBS ${LIBS} freeimage amstrmid ddraw)

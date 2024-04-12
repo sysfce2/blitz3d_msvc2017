@@ -85,6 +85,7 @@ gxRuntime* gxRuntime::openRuntime(HINSTANCE hinst, const string& cmd_line, Debug
     wndclass.hCursor = (HCURSOR)LoadCursor(0,IDC_ARROW);
     wndclass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     RegisterClass(&wndclass);
+
 #if BB_BLITZ3D_ENABLED
     gfx_mode = 0;
     clipper = 0;
@@ -149,6 +150,7 @@ graphics(0),
     osinfo.dwOSVersionInfoSize = sizeof(osinfo);
     GetVersionEx(&osinfo);
 
+#if BB_BLITZ3D_ENABLED
     HMODULE ddraw = LoadLibraryA("ddraw.dll");
     if (ddraw)
     {
@@ -156,6 +158,7 @@ graphics(0),
         if (SetAppCompatData) SetAppCompatData(12, 0);
         FreeLibrary(ddraw);
     }
+#endif
 }
 
 gxRuntime::~gxRuntime()

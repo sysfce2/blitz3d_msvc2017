@@ -11,6 +11,11 @@ void SGD_DECL errorHandler(SGD_String error, void *context) {
     RTEX(error);
 }
 
+void alert(BBStr* message) {
+    sgd_Alert(message->c_str());
+    delete message;
+}
+
 void createWindow(int width, int height, BBStr *title, int flags) {
 	sgd_CreateWindow(width, height, title->c_str(), flags);
 	delete title;
@@ -28,11 +33,18 @@ SGD_Texture loadTexture(BBStr* path, int format, int flags) {
 	return texture;
 }
 
-SGD_Material loadMaterial(BBStr* path) {
-	auto material = sgd_LoadMaterial(path->c_str());
-	delete path;
+SGD_Material loadPBRMaterial(BBStr* path) {
+    auto material = sgd_LoadPBRMaterial(path->c_str());
+    delete path;
 
-	return material;
+    return material;
+}
+
+SGD_Material loadPrelitMaterial(BBStr* path) {
+    auto material = sgd_LoadPrelitMaterial(path->c_str());
+    delete path;
+
+    return material;
 }
 
 SGD_Mesh loadMesh(BBStr* path) {
@@ -63,25 +75,55 @@ SGD_Model loadBonedModel(BBStr* path,int skinned) {
 	return model;
 }
 
+void setMaterialTexture(SGD_Material material, BBStr* name, SGD_Texture texture) {
+    sgd_SetMaterialTexture(material, name->c_str(), texture);
+    delete name;
+}
+
+void setMaterialVector4f(SGD_Material material, BBStr* name, float x, float y, float z,float w) {
+    sgd_SetMaterialVector4f(material, name->c_str(), x, y, z, w);
+    delete name;
+}
+
+void setMaterialVector3f(SGD_Material material, BBStr* name, float x, float y, float z) {
+    sgd_SetMaterialVector3f(material, name->c_str(), x, y, z);
+    delete name;
+}
+
+void setMaterialVector2f(SGD_Material material, BBStr* name, float x, float y) {
+    sgd_SetMaterialVector2f(material, name->c_str(), x, y);
+    delete name;
+}
+
+void setMaterialFloat(SGD_Material material, BBStr* name, float n) {
+    sgd_SetMaterialFloat(material, name->c_str(), n);
+    delete name;
+}
+
 }
 
 bool sgd_create(){
+    sgd_Init();
     sgd_SetErrorHandler(errorHandler, nullptr);
     return true;
 }
 
 bool sgd_destroy(){
+    sgd_Terminate();
     sgd_SetErrorHandler(nullptr, nullptr);
     return true;
 }
 
 bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 
+    // System
+    rtSym("Alert$message", alert);
+    rtSym("%PollEvents", sgd_PollEvents);
+
     // Window
     rtSym("CreateWindow%width%height$title%flags", createWindow);
-    rtSym("%PollEvents", sgd_PollEvents);
 	rtSym("%KeyDown%key",sgd_KeyDown);
-	rtSym("%KeyHit%key",sgd_KeyDown);
+	rtSym("%KeyHit%key",sgd_KeyHit);
 	rtSym("%GetChar",sgd_GetChar);
 	rtSym("#MouseX", sgd_MouseX);
 	rtSym("#MouseY", sgd_MouseY);
@@ -102,20 +144,42 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
     rtSym("SetSceneAmbientLightColor#red#green#blue#alpha", sgd_SetSceneAmbientLightColor);
     rtSym("SetSceneEnvTexture%texture", sgd_SetSceneEnvTexture);
     rtSym("RenderScene", sgd_RenderScene);
+    rtSym("ClearScene", sgd_ClearScene);
     rtSym("Present", sgd_Present);
 
     // Texture
     rtSym("%LoadTexture$path%format%flags", loadTexture);
 
     // Material
-    rtSym("%LoadMaterial$path", loadMaterial);
+    rtSym("%CreatePBRMaterial", sgd_CreatePBRMaterial);
+    rtSym("%LoadPBRMaterial$path", loadPBRMaterial);
+    rtSym("%CreatePrelitMaterial", sgd_CreatePrelitMaterial);
+    rtSym("%LoadPrelitMaterial$path", loadPrelitMaterial);
+    //
+    rtSym("SetMaterialBlendMode%material%blendMode", sgd_SetMaterialBlendMode);
+    rtSym("SetMaterialDepthFunc%material%depthFunc", sgd_SetMaterialDepthFunc);
+    rtSym("SetMaterialCullMode%material%cullMode", sgd_SetMaterialCullMode);
+    rtSym("SetMaterialTexture%material$name%texture", setMaterialTexture);
+    rtSym("SetMaterialVector4f%material$name#x#y#z#a", setMaterialVector4f);
+    rtSym("SetMaterialVector3f%material$name#x#y#z", setMaterialVector3f);
+    rtSym("SetMaterialVector2f%material$name#x#y", setMaterialVector2f);
+    rtSym("SetMaterialFloat%material$name#n", setMaterialFloat);
 
     // Mesh
 	rtSym("%LoadMesh$path", loadMesh);
+    rtSym("%CreateSphereMesh#radius%hSegs%vSegs%material", sgd_CreateSphereMesh);
 	rtSym("%CreateBoxMesh#minX#minY#minZ#maxX#maxY#maxZ%material", sgd_CreateBoxMesh);
-	rtSym("%CreateSphereMesh#radius%hSegs%vSegs%material", sgd_CreateSphereMesh);
+    rtSym("%CreateCylinderMesh#length#radius%segs%material", sgd_CreateCylinderMesh);
+    rtSym("%CreateConeMesh#length#radius%segs%material", sgd_CreateConeMesh);
+    rtSym("%CreateTorusMesh#outerRadius#innerRadius%outerSegs%innerSegs%material", sgd_CreateTorusMesh);
+    rtSym("%CopyMesh%mesh", sgd_CopyMesh);
+    rtSym("SetMeshCastsShadow%mesh%castsShadow", sgd_SetMeshCastsShadow);
+    rtSym("%MeshCastsShadow%mesh", sgd_MeshCastsShadow);
+    rtSym("UpdateMeshNormals%mesh", sgd_UpdateMeshNormals);
+    rtSym("UpdateMeshTangents%mesh", sgd_UpdateMeshTangents);
 	rtSym("FitMesh%mesh#minX#minY#minZ#maxX#maxY#maxZ%uniform", sgd_FitMesh);
     rtSym("TransformMeshTexCoords%mesh#scaleU#scaleV#offsetU#offsetV", sgd_TransformMeshTexCoords);
+    rtSym("%FlipMesh%mesh", sgd_FlipMesh);
 
     // Skybox
 	rtSym("%LoadSkybox$path#roughness", loadSkybox);
@@ -126,11 +190,17 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
     // Model
 	rtSym("%LoadModel$path", loadModel);
 	rtSym("%LoadBonedModel$path%skinned", loadBonedModel);
-	rtSym("AnimateModel", sgd_AnimateModel);
+	rtSym("AnimateModel%model%animation#time%mode", sgd_AnimateModel);
     rtSym("%CreateModel", sgd_CreateModel);
     rtSym("SetModelMesh%model%mesh", sgd_SetModelMesh);
     rtSym("SetModelColor%model#red#green#blue#alpha", sgd_SetModelColor);
 	rtSym("AnimateModel%model%animation#time%mode", sgd_AnimateModel);
+
+    // Sprite
+    rtSym("%CreateSprite", sgd_CreateSprite);
+    rtSym("SetSpriteMaterial%sprite%material", sgd_SetSpriteMaterial);
+    rtSym("SetSpriteColor%sprite#red#green#blue#alpha", sgd_SetSpriteColor);
+    rtSym("SetSpriteRect%sprite#minX#minY#maxX#maxY", sgd_SetSpriteRect);
 
 	// Camera
 	rtSym("%CreatePerspectiveCamera", sgd_CreatePerspectiveCamera);
@@ -148,8 +218,11 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
     rtSym("SetLightFalloff%light#falloff", sgd_SetLightFalloff);
 	rtSym("SetLightInnerConeAngle%light#angle", sgd_SetLightInnerConeAngle);
 	rtSym("SetLightOuterConeAngle%light#angle", sgd_SetLightOuterConeAngle);
+    rtSym("SetLightCastsShadow%light%castsShadow", sgd_SetLightCastsShadow);
+    rtSym("LightCastsShadow%light", sgd_LightCastsShadow);
 
 	// Entity
+    rtSym("DestroyEntity%entity", sgd_DestroyEntity);
 	rtSym("%CopyEntity%entity", sgd_CopyEntity);
 	rtSym("SetEntityParent%entity%parent", sgd_SetEntityParent);
 	rtSym("%EntityParent%entity", sgd_EntityParent);
