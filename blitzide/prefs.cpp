@@ -153,6 +153,8 @@ void Prefs::setDefault(){
     font_tabs_height=10;
     font_debug="verdana";
     font_debug_height=10;
+    font_window="verdana";
+    font_window_height=10;
 
     rgb_bkgrnd=RGB( 0x22,0x55,0x88 );
     rgb_string=RGB( 0x00,0xff,0x66 );
