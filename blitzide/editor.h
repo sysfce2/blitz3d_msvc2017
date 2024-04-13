@@ -5,6 +5,8 @@
 #include "tabber.h"
 #include "funclist.h"
 
+#include <tom.h>
+
 class Editor;
 
 class EditorListener{
@@ -93,15 +95,18 @@ private:
 	Tabber tabber;
 	FuncList funcList,typeList,labsList;
 	CRichEditCtrl editCtrl;
+	ITextDocument* tomDoc;
 
 	void funcSelected( int line );
 	void currentSet( Tabber *tabber,int index );
 
 	void resized();
-	void fixFmt( bool fmt );
-	void getSel(){ editCtrl.GetSel( selStart,selEnd ); }
-	void setSel(){ editCtrl.SetSel( selStart,selEnd ); }
+	void getSel();
+	void setSel();
+	void suspendUndo();
+	void resumeUndo();
 	void endFind();
+	void fixFmt( bool fmt );
 	void setFormat( int from,int to,int color,const string &s="" );
 	void formatLine( int line );
 	void caret();

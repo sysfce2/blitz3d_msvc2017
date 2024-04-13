@@ -94,6 +94,22 @@ findFlags(0),lineToFmt(-1){
 Editor::~Editor(){
 }
 
+void Editor::getSel(){
+	editCtrl.GetSel( selStart,selEnd );
+}
+
+void Editor::setSel(){
+	editCtrl.SetSel( selStart,selEnd );
+}
+
+void Editor::suspendUndo() {
+	tomDoc->Undo( tomSuspend,nullptr );
+}
+
+void Editor::resumeUndo() {
+	tomDoc->Undo( tomResume,nullptr );
+}
+
 void Editor::resized(){
 	CRect r;
 	GetClientRect( &r );
@@ -195,6 +211,10 @@ int Editor::OnCreate( LPCREATESTRUCT cs ){
 		WS_CHILD|WS_VISIBLE|WS_HSCROLL|WS_VSCROLL|WS_BORDER|
 		ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL|ES_NOHIDESEL,
 		r,this,1 );
+
+	auto richole = editCtrl.GetIRichEditOle();
+	richole->QueryInterface(__uuidof(ITextDocument), (void**)&tomDoc);
+
 	editCtrl.SetFont( &prefs.editFont );
 	editCtrl.SetBackgroundColor( false,prefs.rgb_bkgrnd );
 	editCtrl.SetDefaultCharFormat( fmt );
@@ -605,35 +625,36 @@ void Editor::en_msgfilter( NMHDR *nmhdr,LRESULT *result ){
 	MSGFILTER *msg=(MSGFILTER*)nmhdr;
 
 	if( msg->msg==WM_RBUTTONDOWN ) {
-        CPoint p(LOWORD(msg->lParam), HIWORD(msg->lParam));
-        ClientToScreen(&p);
-        CMenu *menu = blitzIDE.mainFrame->GetMenu();
-        CMenu *edit = menu->GetSubMenu(1);
-        edit->TrackPopupMenu(TPM_LEFTALIGN, p.x, p.y, blitzIDE.mainFrame);
-    }else if(msg->msg==WM_CHAR ) {
-        if( msg->wParam=='\t' ){
-            int lineStart=editCtrl.LineFromChar( selStart );
-            int lineEnd=editCtrl.LineFromChar( selEnd );
-            if( lineEnd<=lineStart ) return;
-            editCtrl.HideSelection( true,false );
-            if( GetAsyncKeyState( VK_SHIFT )&0x80000000 ){
-                char buff[4];
-                for( int line=lineStart;line<lineEnd;++line ){
-                    int n=editCtrl.LineIndex( line );
-                    editCtrl.SetSel( n,n+1 );editCtrl.GetSelText( buff );
-                    if( buff[0]=='\t' ) editCtrl.ReplaceSel( "",true );
-                }
-            }else{
-                for( int line=lineStart;line<lineEnd;++line ){
-                    int n=editCtrl.LineIndex( line );
-                    editCtrl.SetSel( n,n );editCtrl.ReplaceSel( "\t",true );
-                }
-            }
-            selStart=editCtrl.LineIndex( lineStart );
-            selEnd=editCtrl.LineIndex( lineEnd );
-            setSel();*result=1;
-            editCtrl.HideSelection( false,false );
-        }
+		CPoint p(LOWORD(msg->lParam), HIWORD(msg->lParam));
+		ClientToScreen(&p);
+		CMenu *menu = blitzIDE.mainFrame->GetMenu();
+		CMenu *edit = menu->GetSubMenu(1);
+		edit->TrackPopupMenu(TPM_LEFTALIGN, p.x, p.y, blitzIDE.mainFrame);
+	}else if(msg->msg==WM_CHAR ) {
+		if( msg->wParam=='\t' ){
+			int lineStart=editCtrl.LineFromChar( selStart );
+			int lineEnd=editCtrl.LineFromChar( selEnd );
+			if( lineEnd<=lineStart ) return;
+			editCtrl.HideSelection( true,false );
+			if( GetAsyncKeyState( VK_SHIFT )&0x80000000 ){
+				char buff[4];
+				for( int line=lineStart;line<lineEnd;++line ){
+					int n=editCtrl.LineIndex( line );
+					editCtrl.SetSel( n,n+1 );editCtrl.GetSelText( buff );
+					if( buff[0]=='\t' ) editCtrl.ReplaceSel( "",true );
+				}
+			}else{
+				for( int line=lineStart;line<lineEnd;++line ){
+					int n=editCtrl.LineIndex( line );
+					editCtrl.SetSel( n,n );editCtrl.ReplaceSel( "\t",true );
+				}
+			}
+			selStart=editCtrl.LineIndex( lineStart );
+			selEnd=editCtrl.LineIndex( lineEnd );
+			setSel();
+			*result=1;
+			editCtrl.HideSelection( false,false );
+		}
 	}else if( msg->msg==WM_KEYDOWN ){
 		if( msg->wParam==13 ){
 			if( selStart!=selEnd ) return;
@@ -645,7 +666,7 @@ void Editor::en_msgfilter( NMHDR *nmhdr,LRESULT *result ){
 			line="\r\n"+line.substr( 0,k )+'\0';
 			editCtrl.ReplaceSel( line.data(),true );
 			*result=1;
-        }
+		}
 	}
 	caret();
 }
@@ -672,7 +693,7 @@ void Editor::en_change(){
 	int begin=editCtrl.LineFromChar( selStart );
 	int end=begin+1;
 
- 	int lineCount=editCtrl.GetLineCount();
+	int lineCount=editCtrl.GetLineCount();
 	int delta=lineCount-fmtLineCount;
 
 	if( delta>0 ){
@@ -697,7 +718,9 @@ void Editor::en_change(){
 		labsList.remove( begin,end );
 	}
 
+	suspendUndo();
 	for( int n=begin;n<end;++n ) formatLine( n );
+	resumeUndo();
 
 	setSel();editCtrl.HideSelection( false,false );
 	fmtBusy=false;
@@ -710,7 +733,7 @@ void Editor::setFormat( int from,int to,int color,const string &s ){
 		char buff[256];
 		editCtrl.GetSelText( buff );buff[to-from]=0;
 		if( string(buff)!=s ){
-			editCtrl.ReplaceSel( s.c_str() );
+			editCtrl.ReplaceSel( s.c_str(),true );
 			editCtrl.SetSel( from,to );
 		}
 	}
@@ -795,7 +818,11 @@ void Editor::fixFmt( bool fmt ){
 	fmtBusy=true;
 	editCtrl.HideSelection( true,false );getSel();
 	long start=selStart;if( fmt ) selStart=-1;
+
+	suspendUndo();
 	formatLine( lineToFmt );
+	resumeUndo();
+
 	selStart=start;setSel();editCtrl.HideSelection( false,false );
 	fmtBusy=false;
 }
