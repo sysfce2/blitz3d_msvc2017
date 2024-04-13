@@ -325,7 +325,7 @@ void Editor::print(){
 
 	HDC hdc=dlg.GetPrinterDC();
 	if( !hdc ){
-		MessageBox( "Error printing" );
+		AfxMessageBox( "Error printing" );
 		return;
 	}
 
@@ -511,7 +511,7 @@ void Editor::endFind(){
 LRESULT Editor::onFind( WPARAM w,LPARAM l ){
 	if( !finder ) return 0;
 
-	findFlags=0;
+	findFlags=FR_DOWN;
 	if( finder->MatchCase() ) findFlags|=FR_MATCHCASE;
 	if( finder->MatchWholeWord() ) findFlags|=FR_WHOLEWORD;
 	strcpy( findBuff,finder->GetFindString() );
