@@ -111,7 +111,8 @@ void Prefs::close(){
 	out<<"win_rect\t"<<win_rect.left<<' '<<win_rect.top<<' '<<win_rect.right<<' '<<win_rect.bottom<<endl;
 	out<<"font_editor\t\""<<font_editor<<"\" "<<font_editor_height<<endl;
 	out<<"font_tabs\t\""<<font_tabs<<"\" "<<font_tabs_height<<endl;
-	out<<"font_debug\t\""<<font_debug<<"\" "<<font_debug_height<<endl;
+    out<<"font_debug\t\""<<font_debug<<"\" "<<font_debug_height<<endl;
+    out<<"font_window\t\""<<font_window<<"\" "<<font_window_height<<endl;
 	out<<hex;
 	out<<"rgb_bkgrnd\t"<<SWAPRB(rgb_bkgrnd)<<endl;
 	out<<"rgb_string\t"<<SWAPRB(rgb_string)<<endl;
@@ -120,6 +121,7 @@ void Prefs::close(){
 	out<<"rgb_comment\t"<<SWAPRB(rgb_comment)<<endl;
 	out<<"rgb_digit\t"<<SWAPRB(rgb_digit)<<endl;
 	out<<"rgb_default\t"<<SWAPRB(rgb_default)<<endl;
+    out<<dec;
 	out<<"edit_tabs\t"<<edit_tabs<<endl;
 	out<<"edit_blkcursor\t"<<edit_blkcursor<<endl;
 	out<<"edit_backup\t"<<edit_backup<<endl;
@@ -128,7 +130,6 @@ void Prefs::close(){
 	for( int k=0;k<recentFiles.size();++k ){
 		out<<"file_recent\t"<<recentFiles[k]<<endl;
 	}
-	out<<dec;
 
 	RemoveFontResource( (homeDir+"/cfg/blitz.fon").c_str() );
 }
@@ -147,13 +148,13 @@ void Prefs::setDefault(){
 
     win_maximized=false;
     win_notoolbar=false;
-    font_editor="blitz";
+    font_editor="Lucida Console";
     font_editor_height=12;
-    font_tabs="verdana";
+    font_tabs="Verdana";
     font_tabs_height=10;
-    font_debug="verdana";
+    font_debug="Verdana";
     font_debug_height=10;
-    font_window="verdana";
+    font_window="Verdana";
     font_window_height=10;
 
     rgb_bkgrnd=RGB( 0x22,0x55,0x88 );
