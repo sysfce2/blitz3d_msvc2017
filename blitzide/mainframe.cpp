@@ -119,6 +119,8 @@ int MainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct ){
 		ID_HOME,ID_BACK,ID_FORWARD };
 	static int toolcnt=sizeof(toolbuts)/sizeof(UINT);
 
+    SetFont(&prefs.windowFont, false);
+
 	if( !toolbmp ){
 		BITMAP bm;
 		string t=prefs.homeDir+"/cfg/ide_toolbar.bmp";

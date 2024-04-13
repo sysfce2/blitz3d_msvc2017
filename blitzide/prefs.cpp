@@ -19,7 +19,7 @@ void Prefs::open(){
 
 	homeDir=p;
 
-	AddFontResource( (homeDir+"/cfg/blitz.fon").c_str() );
+    AddFontResource( (homeDir+"/cfg/blitz.fon").c_str());
 
 	setDefault();
 
@@ -41,7 +41,16 @@ void Prefs::open(){
 			in>>win_rect.left;in>>win_rect.top;
 			in>>win_rect.right;in>>win_rect.bottom;
 		}else if( t.substr( 0,5 )=="font_" ){
-			string s;int h;in>>s;in>>h;
+            string s;
+            if(in.peek()=='\"') {
+                in.ignore();
+                while( in.peek()!='\"')s +=(char)in.get();
+                in.ignore();
+            }else{
+                in>>s;
+            }
+            int h;
+            in >> h;
 			t=t.substr( 5 );
 			if( t=="editor" ){
 				font_editor=s;font_editor_height=h;
@@ -49,7 +58,9 @@ void Prefs::open(){
 				font_tabs=s;font_tabs_height=h;
 			}else if( t=="debug" ){
 				font_debug=s;font_debug_height=h;
-			}
+			}else if( t=="window" ){
+                font_window=s;font_window_height=h;
+            }
 		}else if( t.substr( 0,4 )=="rgb_" ){
 			t=t.substr(4);
 			string s;in>>s;int rgb=0;
@@ -98,9 +109,9 @@ void Prefs::close(){
 	out<<"win_maximized\t"<<win_maximized<<endl;
 	out<<"win_notoolbar\t"<<win_notoolbar<<endl;
 	out<<"win_rect\t"<<win_rect.left<<' '<<win_rect.top<<' '<<win_rect.right<<' '<<win_rect.bottom<<endl;
-	out<<"font_editor\t"<<font_editor<<' '<<font_editor_height<<endl;
-	out<<"font_tabs\t"<<font_tabs<<' '<<font_tabs_height<<endl;
-	out<<"font_debug\t"<<font_debug<<' '<<font_debug_height<<endl;
+	out<<"font_editor\t\""<<font_editor<<"\" "<<font_editor_height<<endl;
+	out<<"font_tabs\t\""<<font_tabs<<"\" "<<font_tabs_height<<endl;
+	out<<"font_debug\t\""<<font_debug<<"\" "<<font_debug_height<<endl;
 	out<<hex;
 	out<<"rgb_bkgrnd\t"<<SWAPRB(rgb_bkgrnd)<<endl;
 	out<<"rgb_string\t"<<SWAPRB(rgb_string)<<endl;
@@ -123,61 +134,45 @@ void Prefs::close(){
 }
 
 void Prefs::setDefault(){
+    RECT r;
+    SystemParametersInfo(SPI_GETWORKAREA,0,&r,0);
+    auto dw = r.right-r.left;
+    auto dh = r.bottom-r.top;
+    auto w = dw/2;
+    auto h= dh*3/4;
+    win_rect.left=r.left+(dw-w)/2;
+    win_rect.top=r.top+(dh-h)/2;
+    win_rect.right=win_rect.left+w;
+    win_rect.bottom=win_rect.top+h;
 
-	prg_debug=true;
+    win_maximized=false;
+    win_notoolbar=false;
+    font_editor="blitz";
+    font_editor_height=12;
+    font_tabs="verdana";
+    font_tabs_height=10;
+    font_debug="verdana";
+    font_debug_height=10;
 
-	win_rect.left=win_rect.top=0;
-	win_rect.right=640;win_rect.bottom=480;
-	win_maximized=false;
-	win_notoolbar=false;
-#ifdef PLUS
-	font_editor="courier";
-	font_editor_height=10;
-#else
-	font_editor="blitz";
-	font_editor_height=12;
-#endif
-	font_tabs="verdana";
-	font_tabs_height=8;
-	font_debug="verdana";
-	font_debug_height=8;
+    rgb_bkgrnd=RGB( 0x22,0x55,0x88 );
+    rgb_string=RGB( 0x00,0xff,0x66 );
+    rgb_ident=RGB( 0xff,0xff,0xff );
+    rgb_keyword=RGB( 0xaa,0xff,0xff );
+    rgb_comment=RGB( 0xff,0xee,0x00 );
+    rgb_digit=RGB( 0x33,0xff,0xdd );
+    rgb_default=RGB( 0xee,0xee,0xee );
 
-	rgb_bkgrnd=RGB( 0x22,0x55,0x88 );
-	rgb_string=RGB( 0x00,0xff,0x66 );
-	rgb_ident=RGB( 0xff,0xff,0xff );
-	rgb_keyword=RGB( 0xaa,0xff,0xff );
-	rgb_comment=RGB( 0xff,0xee,0x00 );
-	rgb_digit=RGB( 0x33,0xff,0xdd );
-	rgb_default=RGB( 0xee,0xee,0xee );
+    edit_tabs=4;
+    edit_blkcursor=false;
+    edit_backup=2;
 
-#if 0 // BlitzPlus...
-	rgb_bkgrnd=	SWAPRB(0x225577);
-	rgb_string=	SWAPRB(0x00ffff);
-	rgb_ident=	SWAPRB(0xffffff);
-	rgb_keyword=SWAPRB(0xffff00);
-	rgb_comment=SWAPRB(0x00ff00);
-	rgb_digit=	SWAPRB(0x00ffff);
-	rgb_default=SWAPRB(0xffffff);
-#endif
-#if 0 // Blitz2D...
-	rgb_bkgrnd=RGB( 32,96,96 );
-	rgb_string=RGB( 0,255,0 );
-	rgb_ident=RGB( 255,255,255 );
-	rgb_keyword=RGB( 255,231,95 );
-	rgb_comment=RGB( 0,255,255 );
-	rgb_digit=RGB( 200,240,255 );
-	rgb_default=RGB( 255,240,200 );
-#endif
+    prg_debug=true;
 
-	edit_tabs=4;
-	edit_blkcursor=false;
-	edit_backup=2;
+    img_toolbar="toolbar.bmp";
 
-	img_toolbar="toolbar.bmp";
+    recentFiles.clear();
 
-	recentFiles.clear();
-
-	createFonts();
+    createFonts();
 }
 
 void Prefs::createFonts(){
@@ -185,10 +180,10 @@ void Prefs::createFonts(){
 	editFont.Detach();
 	tabsFont.Detach();
 	debugFont.Detach();
-	conFont.Detach();
+    windowFont.Detach();
 
 	editFont.CreatePointFont( font_editor_height*10,font_editor.c_str() );
 	tabsFont.CreatePointFont( font_tabs_height*10,font_tabs.c_str() );
 	debugFont.CreatePointFont( font_debug_height*10,font_debug.c_str() );
-	conFont.CreatePointFont( 80,"courier" );
+    windowFont.CreatePointFont( font_window_height*10,font_window.c_str() );
 }
