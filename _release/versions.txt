@@ -1,7 +1,27 @@
 
+***** V1.111 *****
+
+Added UTF-8 Load/Save support.
+
+Fixed Undo/Redo.
+
+Fixed Block Tab/Untab.
+
+Fixed Find.
+
+Increased size of tool bar and default font heights.
+
+Added support for spaces in font names (enclose with "") in blitzide.prefs.
+
+
+***** V1.110 *****
+
+Fixed crash with alpha-only textures.
+
+
 ***** V1.109 *****
 
-Fix IDE double spacing issue.
+Fixed IDE double spacing issue.
 
 
 ***** V1.108b *****
