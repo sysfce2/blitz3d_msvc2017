@@ -604,43 +604,38 @@ void Editor::en_msgfilter( NMHDR *nmhdr,LRESULT *result ){
 
 	MSGFILTER *msg=(MSGFILTER*)nmhdr;
 
-
-	if( msg->msg==WM_RBUTTONDOWN ){
-
-		CPoint p( LOWORD(msg->lParam),HIWORD(msg->lParam) );
-
-		ClientToScreen( &p );
-
-		CMenu *menu=blitzIDE.mainFrame->GetMenu();
-
-		CMenu *edit=menu->GetSubMenu(1);
-
-		edit->TrackPopupMenu( TPM_LEFTALIGN,p.x,p.y,blitzIDE.mainFrame );
-
+	if( msg->msg==WM_RBUTTONDOWN ) {
+        CPoint p(LOWORD(msg->lParam), HIWORD(msg->lParam));
+        ClientToScreen(&p);
+        CMenu *menu = blitzIDE.mainFrame->GetMenu();
+        CMenu *edit = menu->GetSubMenu(1);
+        edit->TrackPopupMenu(TPM_LEFTALIGN, p.x, p.y, blitzIDE.mainFrame);
+    }else if(msg->msg==WM_CHAR ) {
+        if( msg->wParam=='\t' ){
+            int lineStart=editCtrl.LineFromChar( selStart );
+            int lineEnd=editCtrl.LineFromChar( selEnd );
+            if( lineEnd<=lineStart ) return;
+            editCtrl.HideSelection( true,false );
+            if( GetAsyncKeyState( VK_SHIFT )&0x80000000 ){
+                char buff[4];
+                for( int line=lineStart;line<lineEnd;++line ){
+                    int n=editCtrl.LineIndex( line );
+                    editCtrl.SetSel( n,n+1 );editCtrl.GetSelText( buff );
+                    if( buff[0]=='\t' ) editCtrl.ReplaceSel( "",true );
+                }
+            }else{
+                for( int line=lineStart;line<lineEnd;++line ){
+                    int n=editCtrl.LineIndex( line );
+                    editCtrl.SetSel( n,n );editCtrl.ReplaceSel( "\t",true );
+                }
+            }
+            selStart=editCtrl.LineIndex( lineStart );
+            selEnd=editCtrl.LineIndex( lineEnd );
+            setSel();*result=1;
+            editCtrl.HideSelection( false,false );
+        }
 	}else if( msg->msg==WM_KEYDOWN ){
-		if( msg->wParam=='\t' ){
-			int lineStart=editCtrl.LineFromChar( selStart );
-			int lineEnd=editCtrl.LineFromChar( selEnd );
-			if( lineEnd<=lineStart ) return;
-			editCtrl.HideSelection( true,false );
-			if( GetAsyncKeyState( VK_SHIFT )&0x80000000 ){
-				char buff[4];
-				for( int line=lineStart;line<lineEnd;++line ){
-					int n=editCtrl.LineIndex( line );
-					editCtrl.SetSel( n,n+1 );editCtrl.GetSelText( buff );
-					if( buff[0]=='\t' ) editCtrl.ReplaceSel( "",true );
-				}
-			}else{
-				for( int line=lineStart;line<lineEnd;++line ){
-					int n=editCtrl.LineIndex( line );
-					editCtrl.SetSel( n,n );editCtrl.ReplaceSel( "\t",true );
-				}
-			}
-			selStart=editCtrl.LineIndex( lineStart );
-			selEnd=editCtrl.LineIndex( lineEnd );
-			setSel();*result=1;
-			editCtrl.HideSelection( false,false );
-		}else if( msg->wParam==13 ){
+		if( msg->wParam==13 ){
 			if( selStart!=selEnd ) return;
 			int k;
 			int ln=editCtrl.LineFromChar( selStart );
@@ -650,7 +645,7 @@ void Editor::en_msgfilter( NMHDR *nmhdr,LRESULT *result ){
 			line="\r\n"+line.substr( 0,k )+'\0';
 			editCtrl.ReplaceSel( line.data(),true );
 			*result=1;
-		}
+        }
 	}
 	caret();
 }
