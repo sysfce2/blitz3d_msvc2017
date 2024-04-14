@@ -1,4 +1,9 @@
 
+***** V1.112 *****
+
+Fixed bug that breaks debug mode the second time you run the IDE with new prefs format!
+
+
 ***** V1.111 *****
 
 Added UTF-8 Load/Save support.

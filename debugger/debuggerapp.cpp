@@ -3,7 +3,7 @@
 #include "debugger.h"
 #include "debuggerapp.h"
 #include "resource.h"
-#include "prefs.h"
+#include "../blitzide/prefs.h"
 
 DebuggerApp debuggerApp;
 

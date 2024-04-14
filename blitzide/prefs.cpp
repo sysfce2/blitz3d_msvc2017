@@ -1,11 +1,12 @@
 
-#include "stdafx.h"
-#include <winreg.h>
-#include <iomanip>
-#include "resource.h"
 #include "prefs.h"
 
+#include <iomanip>
+#include <fstream>
+
 #define SWAPRB(x) ( (((x)>>16)&0xff) | ((x)&0xff00) | (((x)&0xff)<<16) )
+
+using namespace std;
 
 Prefs prefs;
 
@@ -44,13 +45,14 @@ void Prefs::open(){
             string s;
             if(in.peek()=='\"') {
                 in.ignore();
-                while( in.peek()!='\"')s +=(char)in.get();
+                while( in.peek()!='\"') s+=(char)in.get();
                 in.ignore();
             }else{
                 in>>s;
             }
             int h;
             in >> h;
+            //AfxMessageBox((s+" "+std::to_string(h)).c_str());
 			t=t.substr( 5 );
 			if( t=="editor" ){
 				font_editor=s;font_editor_height=h;

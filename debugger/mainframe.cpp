@@ -3,7 +3,7 @@
 #include "mainframe.h"
 #include "resource.h"
 #include "debuggerapp.h"
-#include "prefs.h"
+#include "../blitzide/prefs.h"
 
 #define WM_IDLEUPDATECMDUI  0x0363  // wParam == bDisableIfNoHandler
 

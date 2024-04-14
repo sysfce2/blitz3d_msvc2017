@@ -2,16 +2,22 @@
 #ifndef PREFS_H
 #define PREFS_H
 
+#define _WIN32_WINNT 0x601
+#include <afxwin.h>         // Core
+
+#include <string>
+#include <vector>
+
 class Prefs{
 public:
 	bool prg_debug;
-	string prg_lastbuild;
+	std::string prg_lastbuild;
 
 	RECT win_rect;
 	bool win_maximized;
 	bool win_notoolbar;
 
-	string font_editor,font_tabs,font_debug,font_window;
+    std::string font_editor,font_tabs,font_debug,font_window;
 	int font_editor_height,font_tabs_height,font_debug_height,font_window_height;
 
 	int rgb_bkgrnd;		//0
@@ -26,15 +32,14 @@ public:
 	bool edit_blkcursor;
 	int edit_backup;
 
-	string img_toolbar;
+    std::string img_toolbar;
 
-	string homeDir;
-	CFont editFont,tabsFont,debugFont;
-    CFont windowFont;
+    std::string homeDir;
+	CFont editFont,tabsFont,debugFont,windowFont;
 
-	vector<string> recentFiles;
+    std::vector<std::string> recentFiles;
 
-	string cmd_line;
+    std::string cmd_line;
 
 	void open();
 	void close();

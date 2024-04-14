@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "debugtree.h"
-#include "prefs.h"
+#include "../blitzide/prefs.h"
 
 #include "../bbruntime/basic.h"
 
@@ -222,4 +222,3 @@ void LocalsTree::pushFrame( void *f,void *e,const char *func ){
 void LocalsTree::popFrame(){
 	frames.pop_back();
 }
-
