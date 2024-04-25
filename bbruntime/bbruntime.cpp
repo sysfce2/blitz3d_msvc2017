@@ -125,52 +125,59 @@ void _bbDebugLeave()
 bool basic_create();
 bool basic_destroy();
 void basic_link(void (*rtSym)(const char* sym, void* pc));
+
 bool math_create();
 bool math_destroy();
 void math_link(void (*rtSym)(const char* sym, void* pc));
+
 bool string_create();
 bool string_destroy();
 void string_link(void (*rtSym)(const char* sym, void* pc));
+
 bool stream_create();
 bool stream_destroy();
 void stream_link(void (*rtSym)(const char* sym, void* pc));
+
 bool sockets_create();
 bool sockets_destroy();
 void sockets_link(void (*rtSym)(const char* sym, void* pc));
+
 bool filesystem_create();
 bool filesystem_destroy();
 void filesystem_link(void (*rtSym)(const char* sym, void* pc));
+
 bool bank_create();
 bool bank_destroy();
 void bank_link(void (*rtSym)(const char* sym, void* pc));
-
-#if BB_BLITZ3D_ENABLED
-bool graphics_create();
-bool graphics_destroy();
-void graphics_link( void (*rtSym)( const char *sym,void *pc ) );
-#endif
-
-bool input_create();
-bool input_destroy();
-void input_link(void (*rtSym)(const char* sym, void* pc));
-bool audio_create();
-bool audio_destroy();
-void audio_link(void (*rtSym)(const char* sym, void* pc));
 
 bool userlibs_create();
 void userlibs_destroy();
 void userlibs_link(void (*rtSym)(const char* sym, void* pc));
 
 #if BB_BLITZ3D_ENABLED
+
+bool input_create();
+bool input_destroy();
+void input_link(void (*rtSym)(const char* sym, void* pc));
+
+bool graphics_create();
+bool graphics_destroy();
+void graphics_link( void (*rtSym)( const char *sym,void *pc ) );
+
+bool audio_create();
+bool audio_destroy();
+void audio_link(void (*rtSym)(const char* sym, void* pc));
+
 bool blitz3d_create();
 bool blitz3d_destroy();
 void blitz3d_link( void (*rtSym)( const char *sym,void *pc ) );
-#endif
 
-#if BB_LIBSGD_ENABLED
+#elif BB_LIBSGD_ENABLED
+
 bool sgd_create();
 bool sgd_destroy();
 bool sgd_link(void (*rtSym)(const char* sym, void* pc));
+
 #endif
 
 void bbruntime_link(void (*rtSym)(const char* sym, void* pc))
@@ -203,23 +210,15 @@ void bbruntime_link(void (*rtSym)(const char* sym, void* pc))
     sockets_link(rtSym);
     filesystem_link(rtSym);
     bank_link(rtSym);
-
+	userlibs_link(rtSym);
 #if BB_BLITZ3D_ENABLED
+	input_link(rtSym);
 	graphics_link( rtSym );
-#endif
-
-    input_link(rtSym);
     audio_link(rtSym);
-
-#if BB_BLITZ3D_ENABLED
 	blitz3d_link( rtSym );
-#endif
-
-#if BB_LIBSGD_ENABLED
+#elif BB_LIBSGD_ENABLED
     sgd_link(rtSym);
 #endif
-
-    userlibs_link(rtSym);
 }
 
 //start up error
@@ -245,47 +244,37 @@ bool bbruntime_create()
                         {
                             if (bank_create())
                             {
-#if BB_BLITZ3D_ENABLED
-                                if( graphics_create() )
+								if (userlibs_create())
 								{
-#endif
-                                    if (input_create())
-                                    {
-                                        if (audio_create())
-                                        {
 #if BB_BLITZ3D_ENABLED
-											if( blitz3d_create() )
+									if( graphics_create() )
+									{
+										if (input_create())
+										{
+											if (audio_create())
 											{
+												if( blitz3d_create() )
+												{
+													return true;
+
+												}else sue("blitz3d_create failed");
+												audio_destroy();
+											}
+											else sue("audio_create failed");
+											input_destroy();
+										}
+										else sue("input_create failed");
+										graphics_destroy();
+									}else sue( "graphics_create failed" );
+#elif BB_LIBSGD_ENABLED
+									if (sgd_create()) {
+										return true;
+									}else sue("sgd_create failed");
 #endif
-#if BB_LIBSGD_ENABLED
-                                                if (sgd_create())
-                                                {
-#endif
-                                                    if (userlibs_create())
-                                                    {
-                                                        return true;
-                                                    }
-                                                    else sue("userlibs_create failed");
-#if BB_LIBSGD_ENABLED
-                                                    sgd_destroy();
-                                                }else sue("sgd_create failed");
-#endif
-#if BB_BLITZ3D_ENABLED
-											    blitz3d_destroy();
-											}else sue("blitz3d_create failed");
-#endif
-                                            audio_destroy();
-                                        }
-                                        else sue("audio_create failed");
-                                        input_destroy();
-                                    }
-                                    else sue("input_create failed");
-#if BB_BLITZ3D_ENABLED
-									graphics_destroy();
-								}else sue( "graphics_create failed" );
-#endif
-                                    bank_destroy();
-                                }
+									userlibs_destroy();
+								}else sue("userlibs_create failed");
+                                bank_destroy();
+                            }
                             else sue("bank_create failed");
                             filesystem_destroy();
                         }
@@ -311,16 +300,13 @@ bool bbruntime_create()
 bool bbruntime_destroy()
 {
     userlibs_destroy();
-#if BB_LIBSGD_ENABLED
-    sgd_destroy();
-#endif
 #if BB_BLITZ3D_ENABLED
     blitz3d_destroy();
-#endif
     audio_destroy();
     input_destroy();
-#if BB_BLITZ3D_ENABLED
-graphics_destroy();
+	graphics_destroy();
+#elif BB_LIBSGD_ENABLED
+	sgd_destroy();
 #endif
     bank_destroy();
     filesystem_destroy();

@@ -5,14 +5,10 @@ project(bbruntime)
 set(SRCS
 	basic.cpp
 	basic.h
-	bbaudio.cpp
-	bbaudio.h
 	bbbank.cpp
 	bbbank.h
 	bbfilesystem.cpp
 	bbfilesystem.h
-	bbinput.cpp
-	bbinput.h
 	bbmath.cpp
 	bbmath.h
 	bbruntime.cpp
@@ -35,10 +31,14 @@ set(LIBS gxruntime)
 if (BB_BLITZ3D_ENABLED)
 
 	set(SRCS ${SRCS}
-		bbblitz3d.cpp
-		bbblitz3d.h
-		bbgraphics.cpp
-		bbgraphics.h
+        bbinput.cpp
+        bbinput.h
+        bbaudio.cpp
+        bbaudio.h
+        bbblitz3d.cpp
+        bbblitz3d.h
+        bbgraphics.cpp
+        bbgraphics.h
 	)
 	set(LIBS gxruntime blitz3d)
 
