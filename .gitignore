@@ -8,6 +8,7 @@ out
 
 # Blitz3D preferences
 blitzide.prefs
+blitzide.prefsx
  
 # Blitz3d backup files
 *.bb_bak1
@@ -30,5 +31,5 @@ cmake-build-*
 *.pdb
 *.ilk
 
-
-
+# Release packages
+Blitz3D-V1.*
