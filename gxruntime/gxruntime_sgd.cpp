@@ -95,8 +95,7 @@ typedef int (_stdcall *SetAppCompatDataFunc)(int x, int y);
 gxRuntime::gxRuntime(HINSTANCE hi, const string& cl, HWND hw):
 		hinst(hi), cmd_line(cl), hwnd(hw),
 		pointer_visible(true),
-
-		fileSystem(0), use_di(false)
+		fileSystem(0)
 {
 	CoInitialize(0);
 

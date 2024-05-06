@@ -198,6 +198,24 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("TransformMeshTexCoords%mesh#scaleU#scaleV#offsetU#offsetV", sgd_TransformMeshTexCoords);
 	rtSym("%FlipMesh%mesh", sgd_FlipMesh);
 
+	// Mesh editing - vertices
+	rtSym("%CreateMesh%vertexCount%meshFlags", sgd_CreateMesh);
+	rtSym("%ResizeVertices%mesh%vertexCount", sgd_ResizeVertices);
+	rtSym("%VertexCount%mesh", sgd_VertexCount);
+	rtSym("%AddVertex%mesh#x#y#z#nx#ny#nz#s#t", sgd_AddVertex);
+	rtSym("SetVertex%mesh%vertex#x#y#z#nx#ny#nz#s#t", sgd_SetVertex);
+	rtSym("SetVertexPosition%mesh%vertex#x#y#z",sgd_SetVertexPosition);
+	rtSym("SetVertexNormal%mesh%vertex#nx#ny#nz",sgd_SetVertexNormal);
+	rtSym("SetVertexTangent%mesh%vertex#tx#ty#tz#tw",sgd_SetVertexTangent);
+	rtSym("SetVertexTexCoords%mesh%vertex#s#t",sgd_SetVertexTexCoords);
+	rtSym("SetVertexColor%mesh%vertex#r#g#b#a",sgd_SetVertexColor);
+	// Surfaces
+	rtSym("%CreateSurface%mesh%triangleCount%material", sgd_CreateSurface);
+	rtSym("ResizeTriangles%surface%triangleCount", sgd_ResizeTriangles);
+	rtSym("%TriangleCount%surface", sgd_TriangleCount);
+	rtSym("%AddTriangle%surface%vertex0%vertex1%vertex2", sgd_AddTriangle);
+	rtSym("SetTriangle%surface%triangle%vertex0%vertex1%vertex2", sgd_SetTriangle);
+
 	// 2D Overlay
 	rtSym("%Load2DFont$path#height", load2DFont);
 	rtSym("#Get2DFontHeight%font", sgd_Get2DFontHeight);
