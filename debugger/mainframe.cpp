@@ -5,6 +5,8 @@
 #include "debuggerapp.h"
 #include "../blitzide/prefs.h"
 
+#include <fstream>
+
 #define WM_IDLEUPDATECMDUI  0x0363  // wParam == bDisableIfNoHandler
 
 enum{
@@ -271,16 +273,9 @@ SourceFile *MainFrame::sourceFile(const char *file){
 		ES_NOHIDESEL|ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL,
 		CRect( 0,0,0,0 ),&tabber,1 );
 
-	if( FILE *f=fopen( file,"rb" ) ){
-		fseek( f,0,SEEK_END );
-		int sz=ftell( f );
-		fseek( f,0,SEEK_SET );
-		char *buf=new char[sz+1];
-		fread( buf,sz,1,f );
-		buf[sz]=0;
-		t->ReplaceSel( buf );
-		delete[] buf;
-		fclose(f);
+	{
+		std::ifstream in(file, std::ios::binary);
+		if (in.is_open()) t->setText(in);
 	}
 
 	file_tabs.insert( make_pair(file,tab) );
