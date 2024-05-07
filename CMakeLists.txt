@@ -19,13 +19,9 @@ set(BB_LIBSGD_ENABLED 0)
 
 if(BB_BLITZ3D_ENABLED)
 	add_compile_definitions(BB_BLITZ3D_ENABLED=1)
-endif()
-
-if(BB_LIBSGD_ENABLED)
+elseif(BB_LIBSGD_ENABLED)
 	add_compile_definitions(BB_LIBSGD_ENABLED=1)
-endif()
-
-if(NOT BB_BLITZ3D_ENABLED AND NOT BB_LIBSGD_ENABLED)
+else()
 	set(BB_HEADLESS 1)
 	add_compile_definitions(BB_HEADLESS=1)
 endif ()
