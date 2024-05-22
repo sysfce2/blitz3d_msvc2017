@@ -100,11 +100,23 @@ void setMaterialFloat(SGD_Material material, BBStr* name, float n) {
 	delete name;
 }
 
-SGD_Font load2DFont(BBStr* path, float height) {
-	auto font = sgd_Load2DFont(path->c_str(), height);
+SGD_Font loadFont(BBStr* path, float height) {
+	auto font = sgd_LoadFont(path->c_str(), height);
 	delete path;
 
 	return font;
+}
+
+float fontTextWidth(SGD_Font font, BBStr* text) {
+	auto r = sgd_FontTextWidth(font, text->c_str());
+	delete text;
+	return r;
+}
+
+SGD_Image loadImage(BBStr* path, int frameCount) {
+	auto r = sgd_LoadImage(path->c_str(), frameCount);
+	delete path;
+	return r;
 }
 
 void draw2DText(BBStr* text, float x, float y) {
@@ -153,17 +165,18 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("%GetChar",sgd_GetChar);
 	rtSym("#MouseX", sgd_MouseX);
 	rtSym("#MouseY", sgd_MouseY);
+	rtSym("#MouseZ", sgd_MouseZ);
 	rtSym("#MouseVX", sgd_MouseVX);
 	rtSym("#MouseVY", sgd_MouseVY);
-	rtSym("#MouseScrollX", sgd_MouseX);
-	rtSym("#MouseScrollY", sgd_MouseY);
+	rtSym("#MouseVZ", sgd_MouseVZ);
+	rtSym("SetMouseZ#z", sgd_SetMouseZ);
 	rtSym("SetMouseCursorMode%cursorMode", sgd_SetMouseCursorMode);
-	rtSym("%MouseButtonDown%button",sgd_MouseButtonDown);
-	rtSym("%MouseButtonHit%button",sgd_MouseButtonHit);
-	rtSym("%GamepadConnected%gamepad",sgd_GamepadConnected);
-	rtSym("%GamepadButtonDown%gamepad%button",sgd_GamepadButtonDown);
-	rtSym("%GamepadButtonHit%gamepad%button",sgd_GamepadButtonHit);
-	rtSym("#GamepadAxis%gamepad%axis",sgd_GamepadAxis);
+	rtSym("%MouseButtonDown%button", sgd_MouseButtonDown);
+	rtSym("%MouseButtonHit%button", sgd_MouseButtonHit);
+	rtSym("%GamepadConnected%gamepad", sgd_GamepadConnected);
+	rtSym("%GamepadButtonDown%gamepad%button", sgd_GamepadButtonDown);
+	rtSym("%GamepadButtonHit%gamepad%button", sgd_GamepadButtonHit);
+	rtSym("#GamepadAxis%gamepad%axis", sgd_GamepadAxis);
 
 	// Texture
 	rtSym("%LoadTexture$path%format%flags", loadTexture);
@@ -195,6 +208,7 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("UpdateMeshNormals%mesh", sgd_UpdateMeshNormals);
 	rtSym("UpdateMeshTangents%mesh", sgd_UpdateMeshTangents);
 	rtSym("FitMesh%mesh#minX#minY#minZ#maxX#maxY#maxZ%uniform", sgd_FitMesh);
+	rtSym("TransformMesh%mesh#tx#ty#tz#rx#ry#rz#sx#sy#sz", sgd_TransformMesh);
 	rtSym("TransformMeshTexCoords%mesh#scaleU#scaleV#offsetU#offsetV", sgd_TransformMeshTexCoords);
 	rtSym("%FlipMesh%mesh", sgd_FlipMesh);
 
@@ -209,6 +223,7 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("SetVertexTangent%mesh%vertex#tx#ty#tz#tw",sgd_SetVertexTangent);
 	rtSym("SetVertexTexCoords%mesh%vertex#s#t",sgd_SetVertexTexCoords);
 	rtSym("SetVertexColor%mesh%vertex#r#g#b#a",sgd_SetVertexColor);
+
 	// Surfaces
 	rtSym("%CreateSurface%mesh%triangleCount%material", sgd_CreateSurface);
 	rtSym("ResizeTriangles%surface%triangleCount", sgd_ResizeTriangles);
@@ -216,9 +231,22 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("%AddTriangle%surface%vertex0%vertex1%vertex2", sgd_AddTriangle);
 	rtSym("SetTriangle%surface%triangle%vertex0%vertex1%vertex2", sgd_SetTriangle);
 
-	// 2D Overlay
-	rtSym("%Load2DFont$path#height", load2DFont);
-	rtSym("#Get2DFontHeight%font", sgd_Get2DFontHeight);
+	// Font
+	rtSym("%LoadFont$path#height", loadFont);
+	rtSym("#FontTextWidth%font$text", fontTextWidth);
+	rtSym("#FontHeight%font", sgd_FontHeight);
+
+	// Image
+	rtSym("%LoadImage$path%frameCount", loadImage);
+	rtSym("SetImageBlendMode%image%blendMode", sgd_SetImageBlendMode);
+	rtSym("SetImageSpriteRect%image#minX#minY#maxX#maxY", sgd_SetImageSpriteRect);
+	rtSym("SetImageSpriteViewMode%image%viewMode", sgd_SetImageSpriteViewMode);
+	rtSym("SetImageDraw2DHandle%image#x#y", sgd_SetImageDraw2DHandle);
+	rtSym("%ImageWidth%image", sgd_ImageWidth);
+	rtSym("%ImageHeight%image", sgd_ImageHeight);
+	rtSym("%ImageFrameCount%image", sgd_ImageFrameCount);
+
+	// 2D Overlay state
 	rtSym("Set2DFillColor#red#green#blue#alpha", sgd_Set2DFillColor);
 	rtSym("Set2DFillMaterial%material", sgd_Set2DFillMaterial);
 	rtSym("Set2DFillEnabled%enabled", sgd_Set2DFillEnabled);
@@ -229,11 +257,18 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("Set2DPointSize#size", sgd_Set2DPointSize);
 	rtSym("Set2DFont%font", sgd_Set2DFont);
 	rtSym("Set2DTextColor#red#green#blue#alpha", sgd_Set2DTextColor);
+	rtSym("#Get2DTextWidth$text", sgd_Get2DTextWidth);
+	rtSym("#Get2DFontHeight", sgd_Get2DFontHeight);
+
+	// 2D Overlay drawing
 	rtSym("Clear2D", sgd_Clear2D);
+	rtSym("Push2DLayer", sgd_Push2DLayer);
+	rtSym("Pop2DLayer", sgd_Pop2DLayer);
 	rtSym("Draw2DPoint#x#y", sgd_Draw2DPoint);
 	rtSym("Draw2DLine#x0#y0#x1#y1", sgd_Draw2DLine);
 	rtSym("Draw2DRect#minX#minY#maxX#maxY", sgd_Draw2DRect);
 	rtSym("Draw2DOval#minX#minY#maxX#maxY", sgd_Draw2DOval);
+	rtSym("Draw2DImage%image#x#y#frame", sgd_Draw2DImage);
 	rtSym("Draw2DText$text#x#y", draw2DText);
 	
 	// Audio
@@ -259,6 +294,10 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("#FPS",sgd_FPS);
 
 	// Entity
+	rtSym("SetEntityEnabled%entity%enabled", sgd_SetEntityEnabled);
+	rtSym("%EntityEnabled%entity", sgd_EntityEnabled);
+	rtSym("SetEntityVisible%entity%visible", sgd_SetEntityVisible);
+	rtSym("%EntityVisible%entity", sgd_EntityVisible);
 	rtSym("DestroyEntity%entity", sgd_DestroyEntity);
 	rtSym("%CopyEntity%entity", sgd_CopyEntity);
 	rtSym("SetEntityParent%entity%parent", sgd_SetEntityParent);
@@ -287,6 +326,9 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("SetCameraFOV%camera#fov", sgd_SetCameraFOV);
 	rtSym("SetCameraNear%camera#near", sgd_SetCameraNear);
 	rtSym("SetCameraFar%camera#far", sgd_SetCameraFar);
+	rtSym("%CameraProject%camera#x#y#z", sgd_CameraProject);
+	rtSym("#ProjectedX", sgd_ProjectedX);
+	rtSym("#ProjectedY", sgd_ProjectedY);
 
 	// Light
 	rtSym("%CreateDirectionalLight", sgd_CreateDirectionalLight);
@@ -298,29 +340,44 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("SetLightInnerConeAngle%light#angle", sgd_SetLightInnerConeAngle);
 	rtSym("SetLightOuterConeAngle%light#angle", sgd_SetLightOuterConeAngle);
 	rtSym("SetLightCastsShadow%light%castsShadow", sgd_SetLightCastsShadow);
+	rtSym("SetLightPriority%light%priority", sgd_SetLightPriority);
 	rtSym("LightCastsShadow%light", sgd_LightCastsShadow);
 
 	// Model
 	rtSym("%LoadModel$path", loadModel);
 	rtSym("%LoadBonedModel$path%skinned", loadBonedModel);
-	rtSym("AnimateModel%model%animation#time%mode", sgd_AnimateModel);
-	rtSym("%CreateModel", sgd_CreateModel);
+	rtSym("%CreateModel%mesh", sgd_CreateModel);
 	rtSym("SetModelMesh%model%mesh", sgd_SetModelMesh);
 	rtSym("%ModelMesh%model", sgd_ModelMesh);
 	rtSym("SetModelColor%model#red#green#blue#alpha", sgd_SetModelColor);
-	rtSym("AnimateModel%model%animation#time%mode", sgd_AnimateModel);
+	rtSym("AnimateModel%model%animation#time%mode#weight", sgd_AnimateModel);
 
 	// Skybox
 	rtSym("%LoadSkybox$path#roughness", loadSkybox);
-	rtSym("%CreateSkybox", sgd_CreateSkybox);
+	rtSym("%CreateSkybox%texture", sgd_CreateSkybox);
 	rtSym("SetSkyboxTexture%skybox%texture", sgd_SetSkyboxTexture);
 	rtSym("SetSkyboxRoughness%skybox#roughness", sgd_SetSkyboxRoughness);
 
 	// Sprite
-	rtSym("%CreateSprite", sgd_CreateSprite);
-	rtSym("SetSpriteMaterial%sprite%material", sgd_SetSpriteMaterial);
+	rtSym("%CreateSprite%image", sgd_CreateSprite);
+	rtSym("SetSpriteImage%sprite%image", sgd_SetSpriteImage);
 	rtSym("SetSpriteColor%sprite#red#green#blue#alpha", sgd_SetSpriteColor);
-	rtSym("SetSpriteRect%sprite#minX#minY#maxX#maxY", sgd_SetSpriteRect);
+	rtSym("SetSpriteFrame%sprite#frame", sgd_SetSpriteFrame);
+
+	// Collisions
+	rtSym("%CreateSphereCollider%entity%colliderType#radius", sgd_CreateSphereCollider);
+	rtSym("%CreateMeshCollider%entity%colliderType%mesh", sgd_CreateMeshCollider);
+	rtSym("SetColliderRadius%collider#radius", sgd_SetColliderRadius);
+	rtSym("EnableCollisions%srcColliderType%dstColliderType%collisionResponse", sgd_EnableCollisions);
+	rtSym("UpdateColliders", sgd_UpdateColliders);
+	rtSym("%CameraPick%camera#windowX#windowY%colliderMask", sgd_CameraPick);
+	rtSym("%LinePick#x0#y0#z0#x1#y1#z1#radius%colliderMask", sgd_LinePick);
+	rtSym("#PickedX", sgd_PickedX);
+	rtSym("#PickedY", sgd_PickedY);
+	rtSym("#PickedZ", sgd_PickedZ);
+	rtSym("#PickedNX", sgd_PickedNX);
+	rtSym("#PickedNY", sgd_PickedNY);
+	rtSym("#PickedNZ", sgd_PickedNZ);
 
 	return true;
 }
