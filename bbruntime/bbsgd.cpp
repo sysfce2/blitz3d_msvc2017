@@ -113,6 +113,12 @@ float fontTextWidth(SGD_Font font, BBStr* text) {
 	return r;
 }
 
+float get2DTextWidth(BBStr* text) {
+	auto r = sgd_Get2DTextWidth(text->c_str());
+	delete text;
+	return r;
+}
+
 SGD_Image loadImage(BBStr* path, int frameCount) {
 	auto r = sgd_LoadImage(path->c_str(), frameCount);
 	delete path;
@@ -160,9 +166,10 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("%WindowHeight", sgd_WindowHeight);
 
 	// User input
-	rtSym("%KeyDown%key",sgd_KeyDown);
-	rtSym("%KeyHit%key",sgd_KeyHit);
-	rtSym("%GetChar",sgd_GetChar);
+	rtSym("%KeyDown%key", sgd_KeyDown);
+	rtSym("%KeyHit%key", sgd_KeyHit);
+	rtSym("%GetChar", sgd_GetChar);
+	rtSym("FlushChars", sgd_FlushChars);
 	rtSym("#MouseX", sgd_MouseX);
 	rtSym("#MouseY", sgd_MouseY);
 	rtSym("#MouseZ", sgd_MouseZ);
@@ -208,8 +215,10 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("UpdateMeshNormals%mesh", sgd_UpdateMeshNormals);
 	rtSym("UpdateMeshTangents%mesh", sgd_UpdateMeshTangents);
 	rtSym("FitMesh%mesh#minX#minY#minZ#maxX#maxY#maxZ%uniform", sgd_FitMesh);
-	rtSym("TransformMesh%mesh#tx#ty#tz#rx#ry#rz#sx#sy#sz", sgd_TransformMesh);
-	rtSym("TransformMeshTexCoords%mesh#scaleU#scaleV#offsetU#offsetV", sgd_TransformMeshTexCoords);
+	rtSym("TFormMesh%mesh#tx#ty#tz#rx#ry#rz#sx#sy#sz", sgd_TFormMesh);
+	rtSym("TFormMeshTexCoords%mesh#scaleU#scaleV#offsetU#offsetV", sgd_TFormMeshTexCoords);
+	rtSym("TransformMesh%mesh#tx#ty#tz#rx#ry#rz#sx#sy#sz", sgd_TransformMesh);	// @deprecated.
+	rtSym("TransformMeshTexCoords%mesh#scaleU#scaleV#offsetU#offsetV", sgd_TransformMeshTexCoords);	// @deprecated.
 	rtSym("%FlipMesh%mesh", sgd_FlipMesh);
 
 	// Mesh editing - vertices
@@ -257,7 +266,7 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("Set2DPointSize#size", sgd_Set2DPointSize);
 	rtSym("Set2DFont%font", sgd_Set2DFont);
 	rtSym("Set2DTextColor#red#green#blue#alpha", sgd_Set2DTextColor);
-	rtSym("#Get2DTextWidth$text", sgd_Get2DTextWidth);
+	rtSym("#Get2DTextWidth$text", get2DTextWidth);
 	rtSym("#Get2DFontHeight", sgd_Get2DFontHeight);
 
 	// 2D Overlay drawing
@@ -292,6 +301,7 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("RenderScene", sgd_RenderScene);
 	rtSym("Present", sgd_Present);
 	rtSym("#FPS",sgd_FPS);
+	rtSym("#RPS",sgd_RPS);
 
 	// Entity
 	rtSym("SetEntityEnabled%entity%enabled", sgd_SetEntityEnabled);
@@ -319,6 +329,14 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 	rtSym("#EntitySX%entity", sgd_EntitySX);
 	rtSym("#EntitySY%entity", sgd_EntitySY);
 	rtSym("#EntitySZ%entity", sgd_EntitySZ);
+	rtSym("AimEntityAtEntity%entity%target#roll", sgd_AimEntityAtEntity);
+	rtSym("AimEntityAtPoint%entity#x#y#z#roll", sgd_AimEntityAtPoint);
+	rtSym("TFormPoint#x#y#z%srcEntity%dstEntity", sgd_TFormPoint);
+	rtSym("TFormVector#x#y#z%srcEntity%dstEntity", sgd_TFormVector);
+	rtSym("TFormNormal#x#y#z%srcEntity%dstEntity", sgd_TFormNormal);
+	rtSym("#TFormedX", sgd_TFormedX);
+	rtSym("#TFormedY", sgd_TFormedY);
+	rtSym("#TFormedZ", sgd_TFormedZ);
 
 	// Camera
 	rtSym("%CreatePerspectiveCamera", sgd_CreatePerspectiveCamera);
@@ -366,8 +384,10 @@ bool sgd_link( void (*rtSym)( const char *sym, void *pc ) ){
 
 	// Collisions
 	rtSym("%CreateSphereCollider%entity%colliderType#radius", sgd_CreateSphereCollider);
+	rtSym("%CreateEllipsoidCollider%entity%colliderType#radius#height", sgd_CreateEllipsoidCollider);
 	rtSym("%CreateMeshCollider%entity%colliderType%mesh", sgd_CreateMeshCollider);
 	rtSym("SetColliderRadius%collider#radius", sgd_SetColliderRadius);
+	rtSym("SetColliderHeight%collider#height", sgd_SetColliderHeight);
 	rtSym("EnableCollisions%srcColliderType%dstColliderType%collisionResponse", sgd_EnableCollisions);
 	rtSym("UpdateColliders", sgd_UpdateColliders);
 	rtSym("%CameraPick%camera#windowX#windowY%colliderMask", sgd_CameraPick);

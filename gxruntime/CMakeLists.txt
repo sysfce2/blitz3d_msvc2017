@@ -61,7 +61,7 @@ target_compile_options(gxruntime PRIVATE /Gz)
 set(LIBS stdutil winmm Ws2_32.lib)
 
 if (BB_BLITZ3D_ENABLED)
-	set(LIBS ${LIBS} freeimage amstrmid fmod375 dinput8 dsound dxguid ddraw)
+	set(LIBS ${LIBS} fmod375 freeimage amstrmid dinput8 dsound dxguid ddraw)
 endif ()
 
 target_link_libraries(gxruntime ${LIBS})

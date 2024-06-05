@@ -18,7 +18,8 @@ set(LIBS
 	crypt32.lib
 	Wldap32.lib
 	Ws2_32.lib
-	${CMAKE_SOURCE_DIR}/../libsgd/cmake-build-windows-x86-release/libsgd/sgd_static.lib
+    ${CMAKE_SOURCE_DIR}/../libsgd/cmake-build-windows-x86-release/libsgd/sgd_static.lib
+#   ${CMAKE_SOURCE_DIR}/../libsgd/cmake-build-windows-x86-debug/libsgd/sgd_static.lib
 )
 
 target_link_libraries(libsgd INTERFACE ${LIBS})
